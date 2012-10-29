@@ -1056,7 +1056,6 @@ module.exports = {
         navigator: {
             children: {
                 device: {
-                    path: "cordova/plugin/windows8/device",
                     children: {
                         capture: {
                             path: "cordova/plugin/capture"
