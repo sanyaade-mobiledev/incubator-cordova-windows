@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,42 +56,7 @@ namespace tooling
             }
         }
 
-        static private void ModifyFile(string name, int userChosenType, string root, int length, string source, string result) 
-        {
-            if (userChosenType == 0)
-            {
-                byte[] byteData = new byte[length];
-                char[] charData = new char[length];
-                FileStream readFile;
-
-                try
-                {
-                    readFile = new FileStream(root + name, FileMode.Open);
-                    readFile.Read(byteData, 0, length);
-                    Decoder dec = Encoding.UTF8.GetDecoder();
-                    dec.GetChars(byteData, 0, byteData.Length, charData, 0);
-
-                    string preMergeString = new string(charData);
-                    
-                    Regex reg = new Regex(source);
-                    string ss = reg.Replace(preMergeString, result);
-                    readFile.Close();
-                    
-                    byte[] finalData = new UTF8Encoding().GetBytes(ss);
-                    FileStream writeFile = new FileStream(root + name, FileMode.Open);
-                    writeFile.Write(finalData, 0, finalData.Length);
-                    writeFile.Flush();
-                    writeFile.Close();
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine("An IO exception has been thrown!");
-                    Console.WriteLine(e.ToString());
-                    Console.ReadLine();
-                }
-            }
-        }
-
+        
         static private string addToEnvironment()
         {
             // add to System Path environment.
@@ -145,7 +110,7 @@ namespace tooling
 
             if (userChosenType == 0)
             {
-                basePath = String.Join("\\", currentResults) + "\\framework\\Cordova-Metro";
+                basePath = String.Join("\\", currentResults) + "\\framework\\Template-Cordova";
                 baseName = "\\Cordova-Metro.zip";
             }
             else if (userChosenType == 1)
@@ -172,75 +137,11 @@ namespace tooling
         
         }
 
-        static private string[] mergeJsFiles(string path, int userChosenType)
-        {
-            string currentPath = Environment.GetEnvironmentVariable("Path");
-
-            string[] currentPaths = path.Split(';');
-            string[] currentTmparr = currentPaths[currentPaths.Length - 1].Split('\\');
-
-            for (int i = 0; i < currentPaths.Length; i++)
-            {
-                if (currentPaths[i].EndsWith("tool\\CordovaBuilder\\CordovaBuilder\\bin\\Debug\\") || currentPaths[i].EndsWith("tool\\CordovaBuilder\\CordovaBuilder\\bin\\Release\\"))
-                {
-                    currentTmparr = currentPaths[i].Split('\\');
-                }
-            }
-
-            string[] currentResults = new string[currentTmparr.Length - 6];
-
-            for (int i = 0; i < currentResults.Length; i++)
-            {
-                currentResults[i] = currentTmparr[i];
-            }
-            string currentResult = String.Join("\\", currentResults) + "\\src\\cordova-win8\\js";
-            string[] fileNames = Directory.GetFiles(currentResult, "*.js");
-            string root = String.Join("\\", currentResults) + "\\framework\\Cordova-Metro";
-
-            if (userChosenType == 0)
-            {
-                FileStream fileStream = new FileStream(root + "\\js\\cordova.js", FileMode.Create);
-                BinaryWriter binaryWriter = new BinaryWriter(fileStream);
-                
-                FileStream stream;
-                for (int i = 0; i < fileNames.Length; i++)
-                {
-                    stream = new FileStream(fileNames[i], FileMode.Open);
-                    BinaryReader reader = new BinaryReader(stream);
-                    int length = (int)stream.Length;
-                    byte[] threeBytes = reader.ReadBytes(3);
-                    //int ch = reader.PeekChar();
-                    if (threeBytes[0] == 0xef && threeBytes[1] == 0xbb && threeBytes[2] == 0xbf)
-                    {
-                        length -= 3;
-                    }
-                    else
-                    {
-                        binaryWriter.Write(threeBytes);
-                    }
-
-                    binaryWriter.Write(reader.ReadBytes(length));
-                    //binaryWriter.Write("\n");
-                    reader.Close();
-                    stream.Close();
-                }
-                binaryWriter.Close();
-                fileStream.Close();
-            }
-            return currentResults;
-        }
+        
 
         static private void cleanProject(int userChosenType, string[] currentResults, string root)
         {
-            if (userChosenType == 0)
-            {
-                /*string deleteFile = root + "\\js\\default.js";
-                if (File.Exists(deleteFile))
-                {
-                    File.Delete(deleteFile);
-                }*/
-            }
-            else if (userChosenType == 1)
+            if (userChosenType == 1)
             {
                 DeleteFolder(String.Join("\\", currentResults) + "\\src\\cordova-win8\\bin");
                 DeleteFolder(String.Join("\\", currentResults) + "\\src\\cordova-win8\\bld");
@@ -289,15 +190,9 @@ namespace tooling
                 return;
             }
 
-            // Merge the JS files.
-            string[] currentResults = mergeJsFiles(path, userChosenType);
-
-            string root = String.Join("\\", currentResults) + "\\framework\\Cordova-Metro";
+            string root = String.Join("\\", currentResults) + "\\framework\\Template-Cordova";
             
-            // Modify the default.html.
-            ModifyFile("\\default.html", userChosenType, root, 1000, "js/default.js", "js/cordova.js");
-            
-			// Clean the project.
+            // Clean the project.
             cleanProject(userChosenType, currentResults, root);
 
             // Create zip.
