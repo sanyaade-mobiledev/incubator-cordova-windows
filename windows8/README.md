@@ -69,9 +69,6 @@
   - Now run the project, and you will get a result page as below.
 <img src="http://i.imgur.com/OgTUP.png" />
 
-### Reference
- - [SQLite3 WinRT Component](https://github.com/doo/SQLite3-WinRT)
- - [Jscex: Asynchronous flow control in JavaScript, with JavaScript](https://github.com/JeffreyZhao/jscex)
 
 
 ## Further Reading
