@@ -137,7 +137,30 @@ namespace tooling
         
         }
 
-        
+        static private string[] mergeJsFiles(string path)
+        {
+            string currentPath = Environment.GetEnvironmentVariable("Path");
+
+            string[] currentPaths = path.Split(';');
+            string[] currentTmparr = currentPaths[currentPaths.Length - 1].Split('\\');
+
+            for (int i = 0; i < currentPaths.Length; i++)
+            {
+                if (currentPaths[i].EndsWith("tool\\CordovaBuilder\\CordovaBuilder\\bin\\Debug\\") || currentPaths[i].EndsWith("tool\\CordovaBuilder\\CordovaBuilder\\bin\\Release\\"))
+                {
+                    currentTmparr = currentPaths[i].Split('\\');
+                }
+            }
+
+            string[] currentResults = new string[currentTmparr.Length - 6];
+
+            for (int i = 0; i < currentResults.Length; i++)
+            {
+                currentResults[i] = currentTmparr[i];
+            }
+            
+            return currentResults;
+        }
 
         static private void cleanProject(int userChosenType, string[] currentResults, string root)
         {
@@ -189,7 +212,9 @@ namespace tooling
                 ReadWait();
                 return;
             }
-
+                
+            string[] currentResults = mergeJsFiles(path);
+            
             string root = String.Join("\\", currentResults) + "\\framework\\Template-Cordova";
             
             // Clean the project.
